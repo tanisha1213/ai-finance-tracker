@@ -49,8 +49,8 @@ function Sidebar() {
               to={item.path}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
                 active
-                  ? 'bg-secondary dark:bg-purple-600/20 text-white dark:text-purple-400 border-l-4 border-secondary dark:border-purple-500'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800 dark:hover:bg-slate-800/40'
+                  ? 'sidebar-active'
+                  : 'sidebar-inactive'
               }`}
             >
               <Icon className="w-5 h-5 transition-transform duration-200 group-hover:scale-105" />

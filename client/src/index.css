@@ -174,17 +174,23 @@ aside {
   border-right: 1px solid rgba(139, 92, 246, 0.1) !important;
 }
 
-/* Sidebar navigation item active status glow */
-.dark .bg-slate-800, .dark .dark\:bg-slate-800, .dark .bg-primary\/10, .dark .bg-secondary\/10, .dark .bg-purple-600\/10 {
-  background: linear-gradient(90deg, rgba(139, 92, 246, 0.18) 0%, rgba(99, 102, 241, 0.06) 100%) !important;
-  border-left: 3px solid #8b5cf6 !important;
-  box-shadow: 0 4px 15px -3px rgba(139, 92, 246, 0.2) !important;
+/* Sidebar navigation item active status glow matching reference */
+.sidebar-active {
+  background: linear-gradient(90deg, rgba(116, 59, 247, 0.18) 0%, rgba(116, 59, 247, 0.06) 100%) !important;
+  border-left: 4px solid #743BF7 !important;
+  color: #a855f7 !important;
+  box-shadow: 0 4px 15px -3px rgba(116, 59, 247, 0.25) !important;
 }
 
-.light .bg-slate-800, .light .bg-primary\/10, .light .bg-secondary\/10, .light .bg-purple-600\/10 {
-  background: linear-gradient(90deg, rgba(116, 59, 247, 0.18) 0%, rgba(116, 59, 247, 0.06) 100%) !important;
-  border-left: 3px solid #743BF7 !important;
-  box-shadow: 0 4px 15px -3px rgba(116, 59, 247, 0.2) !important;
+.sidebar-inactive {
+  color: #94a3b8 !important;
+  border-left: 4px solid transparent !important;
+  transition: all 0.2s ease !important;
+}
+
+.sidebar-inactive:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Light Theme Sidebar and Top Navbar subtle style adjustments */
