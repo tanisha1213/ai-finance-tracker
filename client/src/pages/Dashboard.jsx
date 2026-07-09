@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import {
   Bar,
   BarChart,
@@ -16,24 +17,72 @@ import {
 } from 'recharts'
 import SummaryCard from '../components/dashboard/SummaryCard'
 import { getDashboardSummary } from '../services/dashboardService'
-import { formatCurrency, formatDate } from '../utils/format'
-import { FiArrowUpRight, FiArrowDownRight, FiDollarSign, FiActivity, FiTrendingUp } from 'react-icons/fi'
+import { saveTransaction } from '../redux/slices/transactionSlice'
+import { formatCurrency, formatDate, categories, paymentMethods } from '../utils/format'
+import { FiArrowUpRight, FiArrowDownRight, FiDollarSign, FiActivity, FiTrendingUp, FiPlus, FiCheck } from 'react-icons/fi'
 
 const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
 
+const emptyForm = {
+  type: 'expense',
+  title: '',
+  amount: '',
+  category: 'Food',
+  paymentMethod: 'upi',
+  description: '',
+  transactionDate: new Date().toISOString().slice(0, 10)
+}
+
 function Dashboard() {
+  const dispatch = useDispatch()
   const [summary, setSummary] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  
+  // Quick Add Form States
+  const [showForm, setShowForm] = useState(false)
+  const [form, setForm] = useState(emptyForm)
+  const [formLoading, setFormLoading] = useState(false)
+  const [message, setMessage] = useState('')
 
-  useEffect(() => {
+  const loadDashboard = () => {
+    setLoading(true)
     getDashboardSummary()
       .then((response) => setSummary(response.data.data))
       .catch((err) => setError(err.response?.data?.message || 'Unable to load dashboard'))
       .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    loadDashboard()
   }, [])
 
-  if (loading) {
+  const handleFormChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const submitForm = async (e) => {
+    e.preventDefault()
+    setMessage('')
+    setFormLoading(true)
+    try {
+      await dispatch(saveTransaction({ id: null, data: form })).unwrap()
+      setShowForm(false)
+      setForm(emptyForm)
+      // Reload dashboard charts & counters instantly
+      const response = await getDashboardSummary()
+      setSummary(response.data.data)
+    } catch (err) {
+      setMessage(err || 'Failed to save transaction')
+    } finally {
+      setFormLoading(false)
+    }
+  }
+
+  if (loading && !summary) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-secondary"></div>
@@ -50,8 +99,8 @@ function Dashboard() {
     )
   }
 
-  const trend = summary.monthlyTrend || []
-  const categories = summary.categoryBreakdown || []
+  const trend = summary?.monthlyTrend || []
+  const categoriesList = summary?.categoryBreakdown || []
   const incomeExpense = trend.map((item) => ({
     month: item.month,
     Income: item.income,
@@ -62,42 +111,53 @@ function Dashboard() {
     <div className="space-y-8">
       {/* Welcome Banner */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary to-indigo-950 p-6 md:p-8 text-white shadow-xl">
-        <div className="relative z-10 max-w-xl space-y-2">
-          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">Welcome Back to FinTrack</h2>
-          <p className="text-slate-300 text-sm md:text-base font-normal">
-            Analyze spending patterns, manage active budgets, and discover smart financial recommendations.
-          </p>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="max-w-xl space-y-2">
+            <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">Welcome Back to FinTrack</h2>
+            <p className="text-slate-300 text-sm md:text-base font-normal">
+              Analyze spending patterns, manage active budgets, and discover smart financial recommendations.
+            </p>
+          </div>
+          <button
+            onClick={() => { setMessage(''); setShowForm(true) }}
+            className="flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-extrabold text-primary text-sm hover:bg-slate-100 shadow-lg transition-all w-fit flex-shrink-0"
+          >
+            <FiPlus className="w-4 h-4" />
+            Add Transaction
+          </button>
         </div>
         <div className="absolute right-0 bottom-0 top-0 w-1/3 bg-gradient-to-l from-white/10 to-transparent pointer-events-none transform skew-x-12 hidden md:block" />
       </div>
 
       {/* Summary Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <SummaryCard
-          label="Total Income"
-          value={formatCurrency(summary.totalIncome)}
-          icon={FiArrowUpRight}
-          tone="green"
-        />
-        <SummaryCard
-          label="Total Expense"
-          value={formatCurrency(summary.totalExpense)}
-          icon={FiArrowDownRight}
-          tone="red"
-        />
-        <SummaryCard
-          label="Remaining Budget"
-          value={formatCurrency(summary.budgetRemaining)}
-          icon={FiActivity}
-          tone="blue"
-        />
-        <SummaryCard
-          label="Net Savings"
-          value={formatCurrency(summary.savings)}
-          icon={FiDollarSign}
-          tone="slate"
-        />
-      </div>
+      {summary && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <SummaryCard
+            label="Total Income"
+            value={formatCurrency(summary.totalIncome)}
+            icon={FiArrowUpRight}
+            tone="green"
+          />
+          <SummaryCard
+            label="Total Expense"
+            value={formatCurrency(summary.totalExpense)}
+            icon={FiArrowDownRight}
+            tone="red"
+          />
+          <SummaryCard
+            label="Remaining Budget"
+            value={formatCurrency(summary.budgetRemaining)}
+            icon={FiActivity}
+            tone="blue"
+          />
+          <SummaryCard
+            label="Net Savings"
+            value={formatCurrency(summary.savings)}
+            icon={FiDollarSign}
+            tone="slate"
+          />
+        </div>
+      )}
 
       {/* Analytics Charts Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
@@ -129,8 +189,8 @@ function Dashboard() {
           <div className="h-72 flex items-center justify-center relative">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={categories} dataKey="amount" nameKey="category" innerRadius={60} outerRadius={90} paddingAngle={3}>
-                  {categories.map((entry, index) => (
+                <Pie data={categoriesList} dataKey="amount" nameKey="category" innerRadius={60} outerRadius={90} paddingAngle={3}>
+                  {categoriesList.map((entry, index) => (
                     <Cell key={entry.category} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -140,7 +200,7 @@ function Dashboard() {
                 />
               </PieChart>
             </ResponsiveContainer>
-            {categories.length === 0 && (
+            {categoriesList.length === 0 && (
               <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-sm">
                 No data available
               </div>
@@ -177,7 +237,7 @@ function Dashboard() {
           <div>
             <h3 className="font-bold text-slate-800 text-lg mb-4">Recent Activity</h3>
             <div className="space-y-4">
-              {summary.recentTransactions?.length ? (
+              {summary?.recentTransactions?.length ? (
                 summary.recentTransactions.map((item) => (
                   <div key={item._id} className="flex items-center justify-between p-3 rounded-xl border border-slate-50 hover:bg-slate-50 transition-colors">
                     <div className="flex items-center gap-3">
@@ -209,6 +269,137 @@ function Dashboard() {
           </div>
         </section>
       </div>
+
+      {/* Quick Add Overlay Form */}
+      {showForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100">
+            <header className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+              <h3 className="text-lg font-bold text-slate-800">Quick Add Transaction</h3>
+              <button
+                onClick={() => setShowForm(false)}
+                className="text-slate-400 hover:text-slate-600 font-bold p-1 hover:bg-slate-100 rounded-lg text-lg"
+              >
+                &times;
+              </button>
+            </header>
+
+            <form onSubmit={submitForm} className="p-6 space-y-4">
+              {message && <div className="rounded-xl border border-rose-100 bg-rose-50/50 p-3 text-xs text-rose-700">{message}</div>}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
+                  <select
+                    name="type"
+                    value={form.type}
+                    onChange={handleFormChange}
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20"
+                  >
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Amount</label>
+                  <input
+                    type="number"
+                    name="amount"
+                    min="0.01"
+                    step="any"
+                    value={form.amount}
+                    onChange={handleFormChange}
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={form.title}
+                  onChange={handleFormChange}
+                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Category</label>
+                  <select
+                    name="category"
+                    value={form.category}
+                    onChange={handleFormChange}
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:border-secondary"
+                  >
+                    {categories.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Payment Method</label>
+                  <select
+                    name="paymentMethod"
+                    value={form.paymentMethod}
+                    onChange={handleFormChange}
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:border-secondary capitalize"
+                  >
+                    {paymentMethods.map((p) => (
+                      <option key={p} value={p}>{p.replace('_', ' ')}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Transaction Date</label>
+                <input
+                  type="date"
+                  name="transactionDate"
+                  value={form.transactionDate}
+                  onChange={handleFormChange}
+                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:border-secondary"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleFormChange}
+                  rows="3"
+                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:border-secondary"
+                />
+              </div>
+
+              <footer className="pt-4 border-t border-slate-100 flex justify-end gap-3 bg-slate-50/50 -mx-6 -mb-6 px-6 py-4">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={formLoading}
+                  className="flex items-center justify-center gap-1.5 rounded-xl bg-secondary px-4 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 shadow-md shadow-secondary/15 disabled:opacity-50"
+                >
+                  <FiCheck className="w-4 h-4" />
+                  {formLoading ? 'Saving...' : 'Save Entry'}
+                </button>
+              </footer>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
