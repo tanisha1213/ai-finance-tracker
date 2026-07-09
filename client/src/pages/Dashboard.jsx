@@ -119,13 +119,14 @@ function Dashboard() {
 
   return (
     <div className="space-y-8 text-slate-800 dark:text-slate-100">
-      {/* Premium Hero Balance & Virtual Card Section */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Left Side: Balance Information */}
-        <div className="lg:col-span-2 rounded-3xl border border-slate-100 dark:border-slate-800/80 bg-white dark:bg-gradient-to-b dark:from-[#131522] dark:to-[#0d0f17] p-6 md:p-8 shadow-premium relative overflow-hidden flex flex-col justify-between min-h-[260px]">
-          {/* Subtle glow accent */}
-          <div className="absolute -left-12 -top-12 w-32 h-32 rounded-full bg-purple-500/10 blur-3xl pointer-events-none" />
+      {/* Premium Hero Balance Section */}
+      <div className="rounded-3xl border border-slate-100 dark:border-slate-800/80 bg-white dark:bg-gradient-to-b dark:from-[#131522] dark:to-[#0d0f17] p-6 md:p-8 shadow-premium relative overflow-hidden flex flex-col justify-between min-h-[200px]">
+        {/* Subtle glow accent */}
+        <div className="absolute -left-12 -top-12 w-32 h-32 rounded-full bg-purple-500/10 blur-3xl pointer-events-none" />
+        {/* Top/Right glowing light effect matching references */}
+        <div className="absolute right-12 top-0 w-48 h-48 rounded-full bg-purple-600/5 blur-3xl pointer-events-none" />
 
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 z-10">
           <div>
             <p className="text-xs font-bold text-slate-400 dark:text-dark-text-muted uppercase tracking-wider">Total Balance</p>
             <div className="flex items-baseline gap-1 mt-2">
@@ -151,62 +152,14 @@ function Dashboard() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 mt-6 z-10">
-            <button
-              onClick={() => { setMessage(''); setForm({ ...form, type: 'income' }); setShowForm(true) }}
-              className="flex items-center justify-center gap-2 rounded-full bg-secondary dark:bg-purple-600 px-5 py-2.5 font-extrabold text-white text-xs hover:bg-indigo-700 dark:hover:bg-purple-700 shadow-md transition-all cursor-pointer"
-            >
-              <FiPlus className="w-4 h-4" />
-              Add Income
-            </button>
+          <div className="flex items-center flex-shrink-0">
             <button
               onClick={() => { setMessage(''); setForm({ ...form, type: 'expense' }); setShowForm(true) }}
-              className="flex items-center justify-center gap-2 rounded-full bg-slate-900 dark:bg-slate-850 px-5 py-2.5 font-extrabold text-white text-xs hover:bg-slate-800 dark:hover:bg-slate-805 border border-transparent dark:border-slate-800 transition-all cursor-pointer"
+              className="flex items-center justify-center gap-2 rounded-full bg-secondary dark:bg-purple-600 px-8 py-4 font-black text-white text-sm hover:bg-indigo-750 dark:hover:bg-purple-700 shadow-xl shadow-secondary/25 dark:shadow-purple-600/30 transition-all hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
             >
-              <FiArrowUpRight className="w-4 h-4" />
-              Send Expense
+              <FiPlus className="w-4 h-4 stroke-[3px]" />
+              Add Transaction
             </button>
-          </div>
-        </div>
-
-        {/* Right Side: Virtual Debit Card display */}
-        <div className="rounded-3xl border border-slate-150 dark:border-purple-500/20 bg-gradient-to-tr from-[#2d1554] via-[#10132b] to-[#0e111d] p-6 shadow-premium relative overflow-hidden flex flex-col justify-between text-white min-h-[260px]">
-          {/* Futuristic mesh pattern */}
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-400 via-pink-500 to-indigo-500 pointer-events-none" />
-          
-          <div className="flex justify-between items-start z-10">
-            <div>
-              <p className="text-[10px] uppercase font-bold tracking-widest text-purple-300">Premium Virtual Card</p>
-              <h4 className="text-lg font-black tracking-wider mt-1 text-white">Xpenz Premium</h4>
-            </div>
-            {/* Rupee custom logo badge */}
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-extrabold text-lg shadow-lg">
-              ₹
-            </div>
-          </div>
-
-          <div className="my-6 z-10">
-            <p className="text-xl md:text-2xl font-black tracking-widest text-slate-100 font-mono">
-              ••••  ••••  ••••  9154
-            </p>
-          </div>
-
-          <div className="flex justify-between items-end z-10">
-            <div>
-              <p className="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Card Holder</p>
-              <p className="text-sm font-bold tracking-wide mt-0.5 text-white">TANISHA</p>
-            </div>
-            <div className="flex items-center gap-4 text-right">
-              <div>
-                <p className="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Expires</p>
-                <p className="text-sm font-bold tracking-wide mt-0.5 text-white">12/29</p>
-              </div>
-              {/* Overlapping Mastercard circle aesthetic */}
-              <div className="flex -space-x-3">
-                <div className="w-8 h-8 rounded-full bg-purple-500/80 mix-blend-screen" />
-                <div className="w-8 h-8 rounded-full bg-indigo-500/80 mix-blend-screen" />
-              </div>
-            </div>
           </div>
         </div>
       </div>
