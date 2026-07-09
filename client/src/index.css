@@ -21,14 +21,25 @@ body {
   background-attachment: fixed;
 }
 
+/* Premium radial light background grids matching reference */
+.light body {
+  background-color: #f6f8fd;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.04) 0px, transparent 50%),
+    radial-gradient(at 50% 0%, rgba(99, 102, 241, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.03) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(99, 102, 241, 0.02) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
 /* Dynamic curved lines pattern / texture overlay */
 .fintech-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.006) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.006) 1px, transparent 1px);
+    linear-gradient(rgba(99, 102, 241, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.015) 1px, transparent 1px);
   background-size: 50px 50px;
   mask-image: radial-gradient(ellipse 65% 55% at 50% 0%, #000 60%, transparent 100%);
   -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 0%, #000 60%, transparent 100%);

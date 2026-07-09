@@ -5,7 +5,7 @@ import BottomNavigation from './BottomNavigation'
 
 function Layout() {
   return (
-    <div className="flex h-screen bg-slate-light dark:bg-dark-bg overflow-hidden text-slate-800 dark:text-slate-100 transition-colors duration-200 relative">
+    <div className="flex h-screen bg-transparent overflow-hidden text-slate-800 dark:text-slate-100 transition-colors duration-200 relative">
       {/* Background radial line pattern for fintech dark-theme aesthetics */}
       <div className="fintech-overlay" />
 
