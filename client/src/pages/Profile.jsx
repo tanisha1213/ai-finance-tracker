@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { logout } from '../redux/slices/authSlice'
+import { logout, updateProfileThunk } from '../redux/slices/authSlice'
 import { changePassword, getAccountStats } from '../services/authService'
 import { formatCurrency } from '../utils/format'
 import { FiUser, FiKey, FiCheck, FiPieChart, FiLogOut } from 'react-icons/fi'
@@ -89,7 +89,7 @@ function Profile() {
                   required
                 />
               </div>
-              <button className="flex items-center justify-center gap-1.5 rounded-xl bg-primary dark:bg-slate-800 px-4 py-2.5 font-bold text-white text-sm hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors sm:w-fit mt-2">
+              <button className="flex items-center justify-center gap-1.5 rounded-xl bg-secondary dark:bg-purple-600 px-4 py-2.5 font-bold text-white text-sm hover:bg-indigo-700 dark:hover:bg-purple-700 transition-colors sm:w-fit mt-2 shadow-md shadow-secondary/15">
                 <FiCheck className="w-4 h-4" />
                 Save Profile
               </button>
